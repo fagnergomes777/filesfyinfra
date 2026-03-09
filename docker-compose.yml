@@ -1,27 +1,50 @@
-# Versão inicial para aula 1
+# Filesfy — Infra Docker Compose
 services:
   backend:
     build: ../filesfybackend
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3001
+      - FRONTEND_URL=http://localhost:3000
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=filesfy_db
       - DB_USER=postgres
       - DB_PASSWORD=postgres
+      - JWT_SECRET=filesfy_jwt_secret_key_super_secura_12345
+      # Substitua pelo Client ID real antes de subir em produção
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      # Firebase Admin SDK
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+      # Stripe
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      # Login de teste (desabilitar em produção)
+      - ALLOW_TEST_LOGIN=false
     depends_on:
       - postgres
 
   frontend:
     build: ../filesfyfrontend
     ports:
-      - "3001:3001"
+      - "3000:3000"
     environment:
       - NODE_ENV=production
-      - PORT=3001
+      - PORT=3000
+      - API_URL=http://backend:3001
+      - CORS_ORIGIN=http://localhost:3000
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - FIREBASE_API_KEY=${FIREBASE_API_KEY}
+      - FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
+      - FIREBASE_MESSAGING_SENDER_ID=${FIREBASE_MESSAGING_SENDER_ID}
+      - FIREBASE_APP_ID=${FIREBASE_APP_ID}
+      - FIREBASE_MEASUREMENT_ID=${FIREBASE_MEASUREMENT_ID}
     depends_on:
       - backend
 
